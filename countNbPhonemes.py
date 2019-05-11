@@ -22,6 +22,7 @@
 
 
 from __future__ import print_function
+
 import re
 
 # read the phonemes in a list, strip newlines
@@ -54,7 +55,6 @@ for line in lines:
             countVolunteers[w] += 1
 
 # adds the values of the dicts together
-from collections import Counter
 a = countLipspeakers
 b = countVolunteers
 # add dict values. Normal a.items + b.items overwrites instead of adding

@@ -4,13 +4,11 @@
 #       ffmpeg -i in.mp4 -ss 00:00:20 -s 120x120 -r 1 -f singlejpeg myframe.jpg
 from __future__ import print_function
 
+import concurrent.futures
 import logging
 import time
 
-import concurrent.futures
-
 from utils.helpFunctions import *
-
 
 
 #####################################

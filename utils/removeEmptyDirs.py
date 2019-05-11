@@ -3,7 +3,9 @@
 Module to remove empty folders recursively. Can be used as standalone script or be imported into existing script.
 '''
 
-import os, sys
+import os
+import sys
+
 
 def removeEmptyFolders(path, removeRoot=True):
   'Function to remove empty folders'

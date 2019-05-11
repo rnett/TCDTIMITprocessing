@@ -1,7 +1,5 @@
-import os
-import os.path
-
 import concurrent.futures
+import os.path
 
 from utils.helpFunctions import *
 
@@ -39,7 +37,7 @@ def extractZip(filePath, delete=False):
 ########## Main Function #############
 ######################################
 
-rootDir = "/media/matthijs/TOSHIBA EXT/TCDTIMIT/volunteers"
+rootDir = "/home/rnett/Desktop/TCDTIMIT/data/volunteers"
 batchSize = 1 # 1 or 2 recommended
 
 zipList= createZipList(rootDir)
@@ -69,11 +67,11 @@ if query_yes_no("Would you like to process these zip files?", "yes"):
     
         # update the batchIndex
         batchIndex += batchSize
-            
-        print "One batch complete."
-        print "---------------------------------"
-    
-    print "All done!"
+
+        print("One batch complete.")
+        print("---------------------------------")
+
+    print("All done!")
 else:
     print("Okay, then goodbye!")
 

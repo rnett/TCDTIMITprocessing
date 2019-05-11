@@ -6,7 +6,7 @@
 # 2. download the firefox plugin 'cliget'
 # 3. go to some file on the TCD- TIMIT downloads page, right click, and 'copy curl for link' in the cliget menu
 # 4. get the 'Cookie' header, and replace the link in this script with it
-cookieHeader='Cookie: has_js=1; SSESSa08f1a9d41786c65667603b759c65eb0=Kfnjpyh3YTufGYIBWcHhIQAVVFhQIR1JrVqa-_a_sp8'
+cookieHeader='Cookie: has_js=1; SSESSa08f1a9d41786c65667603b759c65eb0=AEWnsOEE3DVElvnbFrGcg0hSfbYIGo6fzqZfTWjHzZk'
 
 topDir="$PWD"
 echo "Downloading the TCD- TIMIT database to $topDir"
@@ -26,7 +26,7 @@ mkdir -p lipspeakers
 mkdir -p volunteers
 
 
-IFS=' ' read -ra line <<< `cat $1`  
+while IFS=' ' read -ra line; do  
 
 for i in "${line[@]}"; do
 	if [[ $i =~ .*https* ]]; then  # for the URL, you should be cd'ed into the right place. Now download the file.
@@ -57,5 +57,6 @@ for i in "${line[@]}"; do
 		fi
 	fi
 done
+done <"$1"
 
 curl --header  --header 'DNT: 1' 'https://sigmedia.tcd.ie/TCDTIMIT/filebrowser/download/588' -O -J -L

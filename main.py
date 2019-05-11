@@ -10,8 +10,9 @@ from processDatabase_v2 import *
 startTime = time.clock()
 
 nbThreads = 20
-processDatabase('./MLFfiles/lipspeaker_labelfiles.mlf',os.path.expanduser("~/TCDTIMIT/lipreading/processed"), nbThreads) #storeDir requires TCDTIMIT in the name
-processDatabase('./MLFfiles/volunteer_labelfiles.mlf', os.path.expanduser("~/TCDTIMIT/lipreading/processed"), nbThreads)
+processDatabase('./MLFfiles/volunteer_labelfiles.mlf',
+                os.path.expanduser("~/Desktop/TCDTIMIT/data/processed"),
+                nbThreads)
 
 # processDatabase('./MLFfiles/lipspeaker2_test.mlf', os.path.expanduser("~/TCDTIMIT/lipreading/processedTEST3"),
 #                 nbThreads)  # storeDir requires TCDTIMIT in the name

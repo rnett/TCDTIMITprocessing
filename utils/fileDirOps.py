@@ -1,26 +1,19 @@
 from __future__ import print_function
+
+import os
 # this file contains different operations on files and directories:
-#   1. fixNames: files generated with old functions give mouth images, stored as 'videoName_faces_frameNb.jpg'
+#   1. fixNames: files generated with old functions give mouth images,
+#   stored as 'videoName_faces_frameNb.jpg'
 #                Transform this to the format 'videoName_frameNb_faces.jpg'
 #
-import sys
-import getopt
-import zipfile, os.path
-import concurrent.futures
-import threading
-
-import os, errno
-import subprocess
+import os.path
+import pickle
 import shutil
 
 import numpy as np
 from PIL import Image
-import pickle
-import time
-
-import numpy as np
-
 from helpFunctions import *
+
 
 # 1. remove all specified directories and their contents
 # a rootdir, and a list of dirnames to be removed
@@ -413,7 +406,6 @@ def fixNames (rootDir):
 
 
 # convert from frame number to timing info. I didn't need this as I worked with frames all the time
-from shutil import copyfile
 
 def frameToTiming (rootDir):
     nbCopies = 0

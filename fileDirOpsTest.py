@@ -1,20 +1,16 @@
 from __future__ import print_function
+
+import os
 # this file contains different operations on files and directories:
-#   1. fixNames: files generated with old functions give mouth images, stored as 'videoName_faces_frameNb.jpg'
+#   1. fixNames: files generated with old functions give mouth images,
+#   stored as 'videoName_faces_frameNb.jpg'
 #                Transform this to the format 'videoName_frameNb_faces.jpg'
 #
-import sys
-import getopt
-import zipfile, os.path
-import concurrent.futures
-import threading
-
-import os, errno
-import subprocess
+import os.path
 import shutil
 
-import numpy as np
 from general_tools import query_yes_no
+
 
 # 1. remove all specified directories and their contents
 # a rootdir, and a list of dirnames to be removed
@@ -224,8 +220,7 @@ def speakerToBinary(speakerDir, binaryDatabaseDir):
     import numpy as np
     from PIL import Image
     import pickle
-    import time
-    
+
     rootDir = speakerDir
     targetDir = binaryDatabaseDir
     if not os.path.exists(targetDir):
