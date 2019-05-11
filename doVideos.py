@@ -9,6 +9,7 @@ import gc
 import h5py
 import imageio
 import imutils
+import librosa
 import numpy as np
 from PIL import Image
 from imutils import face_utils
@@ -40,9 +41,14 @@ class VideoFile:
         return "VideoFile: speaker: " + self.speaker + ", clip: " + self.clip
 
 
+audio_framerate = 22050
+
 def processVideoFile(video: VideoFile, detector, predictor, badVideos):
     try:
+        wave = librosa.load(video.file, mono=True, sr=audio_framerate)
+
         with imageio.get_reader(video.file) as reader:
+
             size = reader.get_meta_data()["size"]
             video_shape = (len(reader), size[1], size[0])
             gray_frames = np.ndarray(shape=video_shape, dtype=np.uint8)
@@ -101,6 +107,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
             h5f = h5py.File(video.newfile, 'w')
             h5f.create_dataset("video", data=data, compression="gzip")
+            h5f.create_dataset("audio", data=wave, compression="gzip")
             h5f.close()
 
             del data
