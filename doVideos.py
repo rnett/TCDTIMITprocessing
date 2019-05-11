@@ -1,5 +1,5 @@
+import concurrent.futures
 import os
-import sys
 from sys import argv
 from typing import List
 
@@ -40,7 +40,7 @@ class VideoFile:
         return "VideoFile: speaker: " + self.speaker + ", clip: " + self.clip
 
 
-def processVideoFile(video: VideoFile, detector, predictor):
+def processVideoFile(video: VideoFile, detector, predictor, badVideos):
     try:
         with imageio.get_reader(video.file) as reader:
             size = reader.get_meta_data()["size"]
@@ -89,10 +89,12 @@ def processVideoFile(video: VideoFile, detector, predictor):
                 if not isset:
                     print("\nCould not find mouth for speaker", video.speaker,
                           "clip", video.clip)
+                    print("Error loading video for", str(video))
 
                     del data
                     del gray_frames
                     gc.collect()
+                    badVideos.append(video)
                     return False
 
                 data[i] = roi
@@ -107,9 +109,12 @@ def processVideoFile(video: VideoFile, detector, predictor):
             return True
     except IOError as e:
         print(e)
+        print("Error loading video for", str(video), " Exception:", e)
+        badVideos.append(video)
         return False
     except ValueError as e:
-        print(e)
+        print("Error loading video for", str(video), " Exception:", e)
+        badVideos.append(video)
         return False
 
 
@@ -151,11 +156,11 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    i = 0
+    executor = concurrent.futures.ThreadPoolExecutor(6)
+
+    badVideos = []
+
     for video in videos:
-        r = processVideoFile(video, detector, predictor)
-        if not r:
-            print("Error loading video for", str(video))
-        sys.stdout.write(
-            '\r{}/{} ({} %)'.format(i, len(videos), int(100 * i / len(videos))))
-        sys.stdout.flush()
+        executor.submit(processVideoFile, video, detector, predictor, badVideos)
+
+    executor.shutdown(wait=True)
