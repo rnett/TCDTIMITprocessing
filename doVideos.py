@@ -1,6 +1,8 @@
 import concurrent.futures
 import faulthandler
 import os
+import sys
+import time
 from sys import argv
 from typing import List
 
@@ -175,27 +177,27 @@ if __name__ == '__main__':
     runTime = 0
 
     for video in videos:
-        # start = time.time()
-        # processVideoFile(video, detector, predictor)
-        # end = time.time()
-        #
-        # duration = end - start
-        #
-        # runTime = (runTime * done + duration) / (done + 1)
+        start = time.time()
+        processVideoFile(video, detector, predictor)
+        end = time.time()
 
-        executor.submit(processVideoFile, video, detector, predictor)
-        # done += 1
-        #
-        # sys.stdout.write(
-        #     '\rDone {}/{} ({} %)  ETA: {} minutes'
-        #         .format(done, limit,
-        #                 int(100 * done / limit),
-        #                 int(runTime * (limit - done) / 60)))
-        # sys.stdout.flush()
+        duration = end - start
+
+        runTime = (runTime * done + duration) / (done + 1)
+
+        # executor.submit(processVideoFile, video, detector, predictor)
+        done += 1
+
+        sys.stdout.write(
+            '\rDone {}/{} ({} %)  ETA: {} minutes'
+                .format(done, limit,
+                        int(100 * done / limit),
+                        int(runTime * (limit - done) / 60)))
+        sys.stdout.flush()
 
     # sleep(5 * 60)
 
-    executor.shutdown(wait=True)
+    # executor.shutdown(wait=True)
 
     # print(len(badVideos), "failures")
     # for v in badVideos:
