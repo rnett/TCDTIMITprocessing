@@ -137,7 +137,7 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
 
 
 if __name__ == '__main__':
-    videos = get_all_videos(argv[1], argv[2])
+    videos = get_all_videos(argv[1], argv[2])[:5]
 
     detector = dlib.get_frontal_face_detector()
 
