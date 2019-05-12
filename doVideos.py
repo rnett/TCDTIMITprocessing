@@ -43,9 +43,11 @@ class VideoFile:
 audio_framerate = 22050
 
 def processVideoFile(video: VideoFile, detector, predictor, badVideos):
-    wave = librosa.load(video.file, mono=True, sr=audio_framerate)
+    wave, _ = librosa.load(video.file, mono=True, sr=audio_framerate)
 
     with imageio.get_reader(video.file) as reader:
+
+        reader.format.fps = reader.format.fps / 1.76
 
         size = reader.get_meta_data()["size"]
         video_shape = (reader.count_frames(), size[1], size[0])
@@ -137,7 +139,7 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
 
 
 if __name__ == '__main__':
-    videos = get_all_videos(argv[1], argv[2])[:5]
+    videos = get_all_videos(argv[1], argv[2])[:1]
 
     detector = dlib.get_frontal_face_detector()
 
