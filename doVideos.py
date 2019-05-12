@@ -9,7 +9,6 @@ import h5py
 import imageio
 import imutils
 import librosa
-import math
 import numpy as np
 from PIL import Image
 from imutils import face_utils
@@ -50,7 +49,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
         duration = reader.get_meta_data()['duration']
 
-        fps = math.ceil(75 / duration)
+        fps = 75 / duration
         reader.close()
         reader = imageio.get_reader(video.file, fps=fps)
 
@@ -110,7 +109,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                 return False
 
             data[i] = roi
-        print("Read", i, " frames")
+        print("Read", i, "frames")
         print("Writing to", video.newfile)
         h5f = h5py.File(video.newfile, 'w')
         h5f.create_dataset("video", data=data, compression="gzip")
