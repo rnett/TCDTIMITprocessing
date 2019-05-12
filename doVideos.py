@@ -1,6 +1,7 @@
 import concurrent.futures
 import faulthandler
 import os
+from asyncio import sleep
 from sys import argv
 from typing import List
 
@@ -152,8 +153,8 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
 
 
 if __name__ == '__main__':
-    with open("errors_py.log", 'w') as f:
-        faulthandler.enable(f)
+    # with open("errors_py.log", 'w') as f:
+    faulthandler.enable()
 
     videos = get_all_videos(argv[1], argv[2])
 
@@ -179,6 +180,8 @@ if __name__ == '__main__':
         # processVideoFile(video, detector, predictor, badVideos)
         executor.submit(processVideoFile, video, detector, predictor,
                         badVideos)
+
+    sleep(5 * 60)
 
     executor.shutdown(wait=True)
 
