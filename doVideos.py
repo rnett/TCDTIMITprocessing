@@ -50,14 +50,13 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
     try:
         wave, _ = librosa.load(video.file, mono=True, sr=audio_framerate)
 
-        with imageio.get_reader(video.file) as reader:
+        with imageio.get_reader(video.file) as durationReader:
 
-            duration = reader.get_meta_data()['duration']
+            duration = durationReader.get_meta_data()['duration']
 
-            fps = math.ceil(75 / duration)
-            reader.close()
-            reader = imageio.get_reader(video.file, fps=fps)
+        fps = math.ceil(75 / duration)
 
+        with imageio.get_reader(video.file, fps=fps) as reader:
             data = np.zeros(shape=(75, lip_size[0], lip_size[1]),
                             dtype=np.float32)
 
