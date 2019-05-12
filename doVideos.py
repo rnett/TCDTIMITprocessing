@@ -1,4 +1,5 @@
 import concurrent.futures
+import faulthandler
 import os
 from sys import argv
 from typing import List
@@ -57,10 +58,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
             reader.close()
             reader = imageio.get_reader(video.file, fps=fps)
 
-            size = reader.get_meta_data()["size"]
-            video_shape = (75, size[1], size[0])
-            gray_frames = np.ndarray(shape=video_shape, dtype=np.uint8)
-            data = np.zeros(shape=(len(gray_frames), lip_size[0], lip_size[1]),
+            data = np.zeros(shape=(75, lip_size[0], lip_size[1]),
                             dtype=np.float32)
 
             for i, d in enumerate(reader):
@@ -69,7 +67,6 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                     break
 
                 gray = cv2.cvtColor(d, cv2.COLOR_BGR2GRAY)
-                gray_frames[i,] = gray
 
                 # detect faces in the grayscale image
                 rects = detector(gray, 1)
@@ -80,13 +77,12 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                 for (k, rect) in enumerate(rects):
                     # determine the facial landmarks for the face region, then
                     # convert the landmark (x, y)-coordinates to a NumPy array
-                    shape = predictor(gray_frames[i,], rect)
+                    shape = predictor(gray, rect)
                     shape = face_utils.shape_to_np(shape)
 
                     # loop over the face parts individually
-                    for (
-                            name,
-                            (l, m)) in face_utils.FACIAL_LANDMARKS_IDXS.items():
+                    for (name, (l, m)) \
+                            in face_utils.FACIAL_LANDMARKS_IDXS.items():
                         # clone the original image so we can draw on it, then
                         # display the name of the face part on the image
                         if name == 'mouth':
@@ -95,7 +91,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
                             (x, y, w, h) = cv2.boundingRect(
                                 np.array([shape[l:m]]))
-                            roi = gray_frames[i,][y:y + h, x:x + w]
+                            roi = gray[y:y + h, x:x + w]
                             roi = imutils.resize(roi, width=250,
                                                  inter=cv2.INTER_CUBIC)
                             # roi = np.resize(roi,(100,250))
@@ -111,23 +107,21 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                     print("Error loading video for", str(video))
 
                     del data
-                    del gray_frames
                     gc.collect()
                     badVideos.append(video)
                     return False
 
                 data[i] = roi
-            print("Read", i, "frames")
-            print("Writing to", video.newfile)
-            h5f = h5py.File(video.newfile, 'w')
-            h5f.create_dataset("video", data=data, compression="gzip")
-            h5f.create_dataset("audio", data=wave, compression="gzip")
-            h5f.close()
+        print("Read", i, "frames")
+        print("Writing to", video.newfile)
+        h5f = h5py.File(video.newfile, 'w')
+        h5f.create_dataset("video", data=data, compression="gzip")
+        h5f.create_dataset("audio", data=wave, compression="gzip")
+        h5f.close()
 
-            del data
-            del gray_frames
-            gc.collect()
-            return True
+        del data
+        gc.collect()
+        return True
     except:
         badVideos.append(video)
         return False
@@ -159,6 +153,7 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
 
 
 if __name__ == '__main__':
+    faulthandler.enable("errors_py.log")
     videos = get_all_videos(argv[1], argv[2])
 
     detector = dlib.get_frontal_face_detector()
