@@ -152,7 +152,9 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
 
 
 if __name__ == '__main__':
-    faulthandler.enable("errors_py.log")
+    with open("errors_py.log", 'w') as f:
+        faulthandler.enable(f)
+
     videos = get_all_videos(argv[1], argv[2])
 
     detector = dlib.get_frontal_face_detector()
