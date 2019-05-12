@@ -113,6 +113,10 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                 data[i] = roi
         # print("Read", i, "frames")
         # print("Writing to", video.newfile)
+
+        if i != 75:
+            raise ValueError("Wrong frames value of " + str(i))
+
         h5f = h5py.File(video.newfile, 'w')
         h5f.create_dataset("video", data=data, compression="gzip")
         h5f.create_dataset("audio", data=wave, compression="gzip")
