@@ -52,7 +52,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
         reader.fps = 75 // duration
 
         size = reader.get_meta_data()["size"]
-        video_shape = (reader.count_frames(), size[1], size[0])
+        video_shape = (75, size[1], size[0])
         gray_frames = np.ndarray(shape=video_shape, dtype=np.uint8)
         data = np.zeros(shape=(len(gray_frames), lip_size[0], lip_size[1]),
                         dtype=np.float32)
