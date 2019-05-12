@@ -109,7 +109,8 @@ def processVideoFile(video: VideoFile, detector, predictor):
 
                 data[i] = roi
         # print("Read", i, "frames")
-        # print("Writing to", video.newfile)
+        print("Done with", video)
+        print("Writing to", video.newfile)
 
         h5f = h5py.File(video.newfile, 'w')
         h5f.create_dataset("video", data=data, compression="gzip")
