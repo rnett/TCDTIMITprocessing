@@ -47,6 +47,8 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
     with imageio.get_reader(video.file) as reader:
 
+        print(reader.get_meta_data())
+
         frames, secs = reader.count_frames_and_secs()
 
         reader.fps = 75 // secs
