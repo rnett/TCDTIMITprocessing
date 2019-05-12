@@ -105,6 +105,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
                 data[i] = roi
 
+            print("Writing to", video.newfile)
             h5f = h5py.File(video.newfile, 'w')
             h5f.create_dataset("video", data=data, compression="gzip")
             h5f.create_dataset("audio", data=wave, compression="gzip")
