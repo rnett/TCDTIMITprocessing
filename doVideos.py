@@ -47,6 +47,10 @@ audio_framerate = 22050
 
 
 def processVideoFile(video: VideoFile, detector, predictor):
+    if os.path.isfile(video.newfile):
+        print("File for video", video, "already exists, skipping")
+        return
+
     try:
         wave, _ = librosa.load(video.file, mono=True, sr=audio_framerate)
 
