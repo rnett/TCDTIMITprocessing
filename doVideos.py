@@ -47,11 +47,9 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
     with imageio.get_reader(video.file) as reader:
 
-        print(reader.get_meta_data())
+        duration = reader.get_meta_data()['duration']
 
-        frames, secs = reader.count_frames_and_secs()
-
-        reader.fps = 75 // secs
+        reader.fps = 75 // duration
 
         size = reader.get_meta_data()["size"]
         video_shape = (reader.count_frames(), size[1], size[0])
@@ -60,6 +58,10 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                         dtype=np.float32)
 
         for i, d in enumerate(reader):
+
+            if i > 75:
+                break
+
             gray = cv2.cvtColor(d, cv2.COLOR_BGR2GRAY)
             gray_frames[i,] = gray
 
