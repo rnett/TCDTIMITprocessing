@@ -1,4 +1,3 @@
-import concurrent.futures
 import faulthandler
 import os
 import sys
@@ -170,7 +169,7 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    executor = concurrent.futures.ThreadPoolExecutor(32)
+    # executor = concurrent.futures.ThreadPoolExecutor(32)
     done = 0
     limit = len(videos)
 
