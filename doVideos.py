@@ -1,7 +1,6 @@
-import concurrent.futures
 import faulthandler
 import os
-from asyncio import sleep
+import sys
 from sys import argv
 from typing import List
 
@@ -172,18 +171,23 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    executor = concurrent.futures.ThreadPoolExecutor(32)
+    # executor = concurrent.futures.ThreadPoolExecutor(32)
 
     badVideos = []
-
+    done = 0
+    limit = len(videos)
     for video in videos:
-        # processVideoFile(video, detector, predictor, badVideos)
-        executor.submit(processVideoFile, video, detector, predictor,
-                        badVideos)
+        processVideoFile(video, detector, predictor, badVideos)
+        # executor.submit(processVideoFile, video, detector, predictor,
+        #                 badVideos)
+        done += 1
+        sys.stdout.write(
+            '\rDone {}/{} ({} %)'.format(done, limit, int(100 * done / limit)))
+        sys.stdout.flush()
 
-    sleep(5 * 60)
+    # sleep(5 * 60)
 
-    executor.shutdown(wait=True)
+    # executor.shutdown(wait=True)
 
     print(len(badVideos), "failures")
     for v in badVideos:
