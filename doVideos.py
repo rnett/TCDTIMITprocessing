@@ -48,6 +48,8 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
     with imageio.get_reader(video.file) as reader:
 
         size = reader.get_meta_data()["size"]
+        print("Size", size)
+        print("Length", len(reader))
         video_shape = (len(reader), size[1], size[0])
         gray_frames = np.ndarray(shape=video_shape, dtype=np.uint8)
         data = np.zeros(shape=(len(gray_frames), lip_size[0], lip_size[1]),
