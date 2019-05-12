@@ -1,4 +1,3 @@
-import concurrent.futures
 import os
 from sys import argv
 from typing import List
@@ -44,86 +43,76 @@ class VideoFile:
 audio_framerate = 22050
 
 def processVideoFile(video: VideoFile, detector, predictor, badVideos):
-    try:
-        wave = librosa.load(video.file, mono=True, sr=audio_framerate)
+    wave = librosa.load(video.file, mono=True, sr=audio_framerate)
 
-        with imageio.get_reader(video.file) as reader:
+    with imageio.get_reader(video.file) as reader:
 
-            size = reader.get_meta_data()["size"]
-            video_shape = (len(reader), size[1], size[0])
-            gray_frames = np.ndarray(shape=video_shape, dtype=np.uint8)
-            data = np.zeros(shape=(len(gray_frames), lip_size[0], lip_size[1]),
-                            dtype=np.float32)
+        size = reader.get_meta_data()["size"]
+        video_shape = (len(reader), size[1], size[0])
+        gray_frames = np.ndarray(shape=video_shape, dtype=np.uint8)
+        data = np.zeros(shape=(len(gray_frames), lip_size[0], lip_size[1]),
+                        dtype=np.float32)
 
-            for i, d in enumerate(reader):
-                gray = cv2.cvtColor(d, cv2.COLOR_BGR2GRAY)
-                gray_frames[i,] = gray
+        for i, d in enumerate(reader):
+            gray = cv2.cvtColor(d, cv2.COLOR_BGR2GRAY)
+            gray_frames[i,] = gray
 
-                # detect faces in the grayscale image
-                rects = detector(gray, 1)
+            # detect faces in the grayscale image
+            rects = detector(gray, 1)
 
-                isset = False
+            isset = False
 
-                # loop over the face detections
-                for (k, rect) in enumerate(rects):
-                    # determine the facial landmarks for the face region, then
-                    # convert the landmark (x, y)-coordinates to a NumPy array
-                    shape = predictor(gray_frames[i,], rect)
-                    shape = face_utils.shape_to_np(shape)
+            # loop over the face detections
+            for (k, rect) in enumerate(rects):
+                # determine the facial landmarks for the face region, then
+                # convert the landmark (x, y)-coordinates to a NumPy array
+                shape = predictor(gray_frames[i,], rect)
+                shape = face_utils.shape_to_np(shape)
 
-                    # loop over the face parts individually
-                    for (
-                            name,
-                            (l, m)) in face_utils.FACIAL_LANDMARKS_IDXS.items():
-                        # clone the original image so we can draw on it, then
-                        # display the name of the face part on the image
-                        if name == 'mouth':
-                            # extract the ROI of the face region as a
-                            # separate image
+                # loop over the face parts individually
+                for (
+                        name,
+                        (l, m)) in face_utils.FACIAL_LANDMARKS_IDXS.items():
+                    # clone the original image so we can draw on it, then
+                    # display the name of the face part on the image
+                    if name == 'mouth':
+                        # extract the ROI of the face region as a
+                        # separate image
 
-                            (x, y, w, h) = cv2.boundingRect(
-                                np.array([shape[l:m]]))
-                            roi = gray_frames[i,][y:y + h, x:x + w]
-                            roi = imutils.resize(roi, width=250,
-                                                 inter=cv2.INTER_CUBIC)
-                            # roi = np.resize(roi,(100,250))
+                        (x, y, w, h) = cv2.boundingRect(
+                            np.array([shape[l:m]]))
+                        roi = gray_frames[i,][y:y + h, x:x + w]
+                        roi = imutils.resize(roi, width=250,
+                                             inter=cv2.INTER_CUBIC)
+                        # roi = np.resize(roi,(100,250))
 
-                            roi = np.array(Image.fromarray(roi).resize(
-                                (lip_size[1], lip_size[0]), Image.ANTIALIAS))
-                            isset = True
+                        roi = np.array(Image.fromarray(roi).resize(
+                            (lip_size[1], lip_size[0]), Image.ANTIALIAS))
+                        isset = True
 
-                if not isset:
-                    print("\nCould not find mouth for speaker", video.speaker,
-                          "clip", video.clip)
-                    print("Error loading video for", str(video))
+            if not isset:
+                print("\nCould not find mouth for speaker", video.speaker,
+                      "clip", video.clip)
+                print("Error loading video for", str(video))
 
-                    del data
-                    del gray_frames
-                    gc.collect()
-                    badVideos.append(video)
-                    return False
+                del data
+                del gray_frames
+                gc.collect()
+                badVideos.append(video)
+                return False
 
-                data[i] = roi
+            data[i] = roi
 
-            print("Writing to", video.newfile)
-            h5f = h5py.File(video.newfile, 'w')
-            h5f.create_dataset("video", data=data, compression="gzip")
-            h5f.create_dataset("audio", data=wave, compression="gzip")
-            h5f.close()
+        print("Writing to", video.newfile)
+        h5f = h5py.File(video.newfile, 'w')
+        h5f.create_dataset("video", data=data, compression="gzip")
+        h5f.create_dataset("audio", data=wave, compression="gzip")
+        h5f.close()
 
-            del data
-            del gray_frames
-            gc.collect()
-            return True
-    except IOError as e:
-        print(e)
-        print("Error loading video for", str(video), " Exception:", e)
-        badVideos.append(video)
-        return False
-    except ValueError as e:
-        print("Error loading video for", str(video), " Exception:", e)
-        badVideos.append(video)
-        return False
+        del data
+        del gray_frames
+        gc.collect()
+        return True
 
 
 def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
@@ -164,11 +153,13 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    executor = concurrent.futures.ThreadPoolExecutor(6)
+    # executor = concurrent.futures.ThreadPoolExecutor(6)
 
     badVideos = []
 
     for video in videos:
-        executor.submit(processVideoFile, video, detector, predictor, badVideos)
+        processVideoFile(video, detector, predictor, badVideos)
+        # executor.submit(processVideoFile, video, detector, predictor,
+        # badVideos)
 
-    executor.shutdown(wait=True)
+    #executor.shutdown(wait=True)
