@@ -1,7 +1,6 @@
+import concurrent.futures
 import faulthandler
 import os
-import sys
-import time
 from sys import argv
 from typing import List
 
@@ -12,7 +11,6 @@ import h5py
 import imageio
 import imutils
 import librosa
-import math
 import numpy as np
 from PIL import Image
 from imutils import face_utils
@@ -47,24 +45,22 @@ class VideoFile:
 audio_framerate = 22050
 
 
-def processVideoFile(video: VideoFile, detector, predictor, badVideos):
+def processVideoFile(video: VideoFile, detector, predictor):
     try:
         wave, _ = librosa.load(video.file, mono=True, sr=audio_framerate)
 
-        with imageio.get_reader(video.file) as durationReader:
+        # with imageio.get_reader(video.file) as durationReader:
+        #
+        #     duration = durationReader.get_meta_data()['duration']
 
-            duration = durationReader.get_meta_data()['duration']
-
-        fps = math.ceil(75 / duration)
+        fps = 15
 
         with imageio.get_reader(video.file, fps=fps) as reader:
-            data = np.zeros(shape=(75, lip_size[0], lip_size[1]),
+            frames = reader.count_frames()
+            data = np.zeros(shape=(frames, lip_size[0], lip_size[1]),
                             dtype=np.float32)
 
             for i, d in enumerate(reader):
-
-                if i >= 75:
-                    break
 
                 gray = cv2.cvtColor(d, cv2.COLOR_BGR2GRAY)
 
@@ -108,15 +104,11 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
                     del data
                     gc.collect()
-                    badVideos.append(video)
                     return False
 
                 data[i] = roi
         # print("Read", i, "frames")
         # print("Writing to", video.newfile)
-
-        if i != 75:
-            raise ValueError("Wrong frames value of " + str(i))
 
         h5f = h5py.File(video.newfile, 'w')
         h5f.create_dataset("video", data=data, compression="gzip")
@@ -127,7 +119,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
         gc.collect()
         return True
     except:
-        badVideos.append(video)
+        print("Error loading video for", str(video))
         return False
 
 
@@ -176,38 +168,35 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    # executor = concurrent.futures.ThreadPoolExecutor(32)
-
-    badVideos = []
+    executor = concurrent.futures.ThreadPoolExecutor(32)
     done = 0
     limit = len(videos)
 
     runTime = 0
 
     for video in videos:
-        start = time.time()
-        processVideoFile(video, detector, predictor, badVideos)
-        end = time.time()
+        # start = time.time()
+        # processVideoFile(video, detector, predictor)
+        # end = time.time()
+        #
+        # duration = end - start
+        #
+        # runTime = (runTime * done + duration) / (done + 1)
 
-        duration = end - start
-
-        runTime = (runTime * done + duration) / (done + 1)
-
-        # executor.submit(processVideoFile, video, detector, predictor,
-        #                 badVideos)
-        done += 1
-
-        sys.stdout.write(
-            '\rDone {}/{} ({} %)  ETA: {} minutes'
-                .format(done, limit,
-                        int(100 * done / limit),
-                        int(runTime * (limit - done) / 60)))
-        sys.stdout.flush()
+        executor.submit(processVideoFile, video, detector, predictor)
+        # done += 1
+        #
+        # sys.stdout.write(
+        #     '\rDone {}/{} ({} %)  ETA: {} minutes'
+        #         .format(done, limit,
+        #                 int(100 * done / limit),
+        #                 int(runTime * (limit - done) / 60)))
+        # sys.stdout.flush()
 
     # sleep(5 * 60)
 
-    # executor.shutdown(wait=True)
+    executor.shutdown(wait=True)
 
-    print(len(badVideos), "failures")
-    for v in badVideos:
-        print(v.speaker, ":", v.clip)
+    # print(len(badVideos), "failures")
+    # for v in badVideos:
+    #     print(v.speaker, ":", v.clip)
