@@ -10,6 +10,7 @@ import h5py
 import imageio
 import imutils
 import librosa
+import math
 import numpy as np
 from PIL import Image
 from imutils import face_utils
@@ -52,7 +53,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
             duration = reader.get_meta_data()['duration']
 
-            fps = 75 // duration
+            fps = math.ceil(75 / duration)
             reader.close()
             reader = imageio.get_reader(video.file, fps=fps)
 
@@ -102,6 +103,7 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
                             roi = np.array(Image.fromarray(roi).resize(
                                 (lip_size[1], lip_size[0]), Image.ANTIALIAS))
                             isset = True
+                            break
 
                 if not isset:
                     print("\nCould not find mouth for speaker", video.speaker,
@@ -143,6 +145,10 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
     videos = []
 
     for speaker in speakers:
+
+        if speaker in ["55F", "56M", "57M", "58F", "59F"]:
+            continue
+
         clips = os.listdir(base + speaker + "/Clips/straightcam/")
         clips = [c for c in clips if c.endswith(".mp4")]
 
@@ -169,7 +175,7 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    executor = concurrent.futures.ThreadPoolExecutor(6)
+    executor = concurrent.futures.ThreadPoolExecutor(32)
 
     badVideos = []
 
