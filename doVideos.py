@@ -49,7 +49,9 @@ def processVideoFile(video: VideoFile, detector, predictor, badVideos):
 
         duration = reader.get_meta_data()['duration']
 
-        reader.fps = 75 // duration
+        fps = 75 // duration
+        reader.close()
+        reader = imageio.get_reader(video.file, fps=fps)
 
         size = reader.get_meta_data()["size"]
         video_shape = (reader.count_frames(), size[1], size[0])
