@@ -142,8 +142,8 @@ def get_all_videos(base: str, newbase: str) -> List[VideoFile]:
     videos = []
 
     for speaker in speakers:
-        # if speaker in ["55F", "56M", "57M", "58F", "59F"]:
-        #     continue
+        if speaker in ["55F", "56M", "57M", "58F", "59F"]:
+            continue
 
         clips = os.listdir(base + speaker + "/Clips/straightcam/")
         clips = [c for c in clips if c.endswith(".mp4")]
