@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     print(len(videos), "videos to process")
 
-    executor = concurrent.futures.ThreadPoolExecutor(6)
+    executor = concurrent.futures.ThreadPoolExecutor(16)
     done = 0
     limit = len(videos)
 
