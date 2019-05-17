@@ -3,25 +3,14 @@
 #### help functions
 from __future__ import print_function
 
-# remove without complaining
-import os, os.path
-import subprocess
-import traceback
-import sys
-import glob
-from os import listdir
-from os.path import isfile, join
-
-import numpy as np
-import scipy.io as sio
-import dlib
 from skimage import io
-from skimage.transform import resize
 from skimage.color import rgb2gray
-from skimage import img_as_ubyte
+from skimage.transform import resize
 
-from fixTCDTIMITwavStructure import *
 from getPhnFiles import *
+
+
+# remove without complaining
 
 ########### Small helpfunctions ###########
 
@@ -352,7 +341,6 @@ def extractAllFrames (videoPath, videoName, storeDir, framerate, targetSize, cro
 # detect faces in all jpg's in sourceDir
 # extract faces to "storeDir/faces", and mouths to "storeDir/mouths"
 
-from PIL import Image
 import scipy.misc
 def extractFacesMouths (sourceDir, storeDir, detector, predictor, saveFaces = True, saveMouths = True):
 
