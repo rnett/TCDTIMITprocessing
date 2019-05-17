@@ -57,6 +57,6 @@ for i in "${line[@]}"; do
 		fi
 	fi
 done
-done <"$1"
+done < IFS
 
-curl --header  --header 'DNT: 1' 'https://sigmedia.tcd.ie/TCDTIMIT/filebrowser/download/588' -O -J -L
+curl --header "$cookieHeader" 'https://sigmedia.tcd.ie/TCDTIMIT/filebrowser/download/588' -O -J -L
