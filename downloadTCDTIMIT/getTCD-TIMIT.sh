@@ -57,6 +57,6 @@ for i in "${line[@]}"; do
 		fi
 	fi
 done
-done < IFS
+done < "$1"
 
 curl --header "$cookieHeader" 'https://sigmedia.tcd.ie/TCDTIMIT/filebrowser/download/588' -O -J -L
