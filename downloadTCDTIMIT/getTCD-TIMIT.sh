@@ -6,7 +6,7 @@
 # 2. download the firefox plugin 'cliget'
 # 3. go to some file on the TCD- TIMIT downloads page, right click, and 'copy curl for link' in the cliget menu
 # 4. get the 'Cookie' header, and replace the link in this script with it
-cookieHeader='Cookie: has_js=1; SSESSa08f1a9d41786c65667603b759c65eb0=ad1e-sMi86P6bxijMiWhOoCMUDvd42udBz1EF33HuOI'
+cookieHeader='Cookie: has_js=1; SSESSa08f1a9d41786c65667603b759c65eb0=HyYx2Qo1mj36b8KDJTdf0QSl2hO-18h6pEma0bzUOWU'
 
 topDir="$PWD"
 echo "Downloading the TCD- TIMIT database to $topDir"
