@@ -1,10 +1,10 @@
 import concurrent.futures
 import os.path
 
-from utils.helpFunctions import *
-
-
 # Some helper functions
+from general_tools import query_yes_no
+
+
 def silentremove (filename):
     try:
         os.remove(filename)
