@@ -47,6 +47,7 @@ deleteZips = True
 batchIndex = 0
 executor = concurrent.futures.ProcessPoolExecutor(batchSize)
 running = 1
+
 while running:
     # get commands for current batch
     if batchIndex + batchSize > len(zipList):
