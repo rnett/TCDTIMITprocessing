@@ -43,39 +43,31 @@ batchSize = 1 # 1 or 2 recommended
 zipList= createZipList(rootDir)
 print("\n".join(zipList))
 
-if query_yes_no("Would you like to process these zip files?", "yes"):
-    deleteZips = query_yes_no("Would you like to remove the zip files after extraction?", "no")
-    batchIndex = 0
-    executor = concurrent.futures.ProcessPoolExecutor(batchSize)
-    running = 1
-    while running:
-        # get commands for current batch
-        if batchIndex + batchSize > len(zipList):
-            print("Processing LAST BATCH...")
-            running = 0
-            currentZips = zipList[batchIndex:]  # till the end
-        else:
-            currentZips = zipList[batchIndex:batchIndex + batchSize]
-    
-        # execute the commands
-        futures = []
-        for i in range(len(currentZips)):
-            filePath = currentZips[i]
-            print("Unzipping ", filePath)
-            futures.append(executor.submit(extractZip, filePath, deleteZips))
-        concurrent.futures.wait(futures)
-    
-        # update the batchIndex
-        batchIndex += batchSize
+deleteZips = True
+batchIndex = 0
+executor = concurrent.futures.ProcessPoolExecutor(batchSize)
+running = 1
+while running:
+    # get commands for current batch
+    if batchIndex + batchSize > len(zipList):
+        print("Processing LAST BATCH...")
+        running = 0
+        currentZips = zipList[batchIndex:]  # till the end
+    else:
+        currentZips = zipList[batchIndex:batchIndex + batchSize]
 
-        print("One batch complete.")
-        print("---------------------------------")
+    # execute the commands
+    futures = []
+    for i in range(len(currentZips)):
+        filePath = currentZips[i]
+        print("Unzipping ", filePath)
+        futures.append(executor.submit(extractZip, filePath, deleteZips))
+    concurrent.futures.wait(futures)
 
-    print("All done!")
-else:
-    print("Okay, then goodbye!")
+    # update the batchIndex
+    batchIndex += batchSize
 
+    print("One batch complete.")
+    print("---------------------------------")
 
-
-
-    
+print("All done!")
