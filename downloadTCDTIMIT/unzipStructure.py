@@ -2,7 +2,7 @@ import concurrent.futures
 import os.path
 
 # Some helper functions
-from general_tools import query_yes_no
+from utils.helpFunctions import query_yes_no
 
 
 def silentremove (filename):

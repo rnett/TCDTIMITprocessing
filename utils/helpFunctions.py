@@ -3,10 +3,6 @@
 #### help functions
 from __future__ import print_function
 
-from skimage import io
-from skimage.color import rgb2gray
-from skimage.transform import resize
-
 from getPhnFiles import *
 
 
