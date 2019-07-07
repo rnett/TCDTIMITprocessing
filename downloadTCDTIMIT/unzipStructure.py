@@ -37,7 +37,7 @@ def extractZip(filePath, delete=False):
 ########## Main Function #############
 ######################################
 
-rootDir = "/home/rnett/Desktop/TCDTIMIT/data/volunteers"
+rootDir = "/home/rnett/TCDTIMIT/data/volunteers"
 batchSize = 1 # 1 or 2 recommended
 
 zipList= createZipList(rootDir)
