@@ -127,6 +127,7 @@ def processVideoFile(video: VideoFile, detector, predictor):
     except Exception as e:
         print("Error loading video for", str(video))
         print("Exception:", e)
+        raise e
         return False
 
 
